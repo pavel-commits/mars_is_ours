@@ -1,97 +1,45 @@
 import pygame
 
-
-class Board:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.board = [[0] * width for _ in range(height)]
-
-        self.left = 10
-        self.top = 10
-        self.cell_size = 30
-
-    def set_view(self, left, top, cell_size):
-        self.left = left
-        self.top = top
-        self.cell_size = cell_size
+SCREEN_SIZE = width, length = 800, 400
 
 
-    def render(self, screen):
-        for i in range(self.height):
-            for j in range(self.width):
-                pygame.draw.rect(screen, (255, 255, 255),
-                                 (self.left + j * self.cell_size,
-                                  self.top + i * self.cell_size,
-                                  self.cell_size, self.cell_size), 1)
-
-    def get_cell(self, mouse_pos):
-        x_mouse, y_mouse = mouse_pos
-        a = int((x_mouse - self.left) // self.cell_size)
-        b = int((y_mouse - self.top) // self.cell_size)
-        if 0 <= a < self.width and 0 <= b < self.height:
-            return a, b
-        return None
-
-    def on_click(self, cell_coords):
-        return cell_coords
-
-    def get_click(self, mouse_pos):
-        return self.on_click(self.get_cell(mouse_pos))
+def xs(x):
+    return width // 2 + x
 
 
-class Lines(Board):
-    def __init__(self, width, height):
-        super(Lines, self).__init__(width, height)
-
-    def render(self, screen):
-        super(Lines, self).render(screen)
-        for i in range(self.height):
-            for j in range(self.width):
-                if self.board[i][j]:
-                    pygame.draw.rect(screen, (100, 255, 100),
-                                     (self.left + j * self.cell_size,
-                                      self.top + i * self.cell_size,
-                                      self.cell_size, self.cell_size))
-
-
-
-    def drawcircles(self, cell):
-        if cell is None:
-            return
-        x_cell, y_cell = cell
-        if self.board[y_cell][x_cell] == 0:
-            if 1 in [i for j in self.board for i in j]:
-                x1, y1, x2, y2 = 0, 0, 0, 0
-                pass
-                # self.has_path(self, x1, y1, x2, y2)
-            else:
-                self.board[y_cell][x_cell] = 1
-
-        elif self.board[y_cell][x_cell] == 1:
-            self.board[y_cell][x_cell] = 2
-
-        elif self.board[y_cell][x_cell] == 2:
-            self.board[y_cell][x_cell] = 1
-
-    def has_path(self, x1, y1, x2, y2):
-        pass
+def ys(y):
+    return length // 2 - y
 
 
 pygame.init()
-screen = pygame.display.set_mode((400, 400))
-board = Lines(10, 10)
-board.set_view(5, 5, 39)
-board.render(screen)
-running = True
-while running:
+pygame.display.set_caption('Тир')
+screen = pygame.display.set_mode(SCREEN_SIZE)
+
+pos = xs(0)
+angle = -1
+
+clock = pygame.time.Clock()
+run = True
+while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            pos = event.pos
-            board.drawcircles(board.get_click(pos))
-    board.render(screen)
-    pygame.display.flip()
-pygame.quit()
+            run = False
+        elif event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
+            print(pos)
 
+    if pos == 10 or pos == 790:
+        angle = -angle
+    pos += angle
+
+    screen.fill('grey')
+    pygame.draw.circle(screen, 'blue', (xs(0), ys(0)), 200)
+    pygame.draw.circle(screen, 'yellow', (xs(0), ys(0)), 140)
+    pygame.draw.circle(screen, 'green', (xs(0), ys(0)), 100)
+    pygame.draw.circle(screen, 'brown', (xs(0), ys(0)), 60)
+    pygame.draw.circle(screen, 'pink', (xs(0), ys(0)), 40)
+    pygame.draw.circle(screen, 'red', (xs(0), ys(0)), 20)
+
+    pygame.draw.circle(screen, 'black', (pos, ys(0)), 10)
+    pygame.display.flip()
+    clock.tick(500)
+pygame.quit()
